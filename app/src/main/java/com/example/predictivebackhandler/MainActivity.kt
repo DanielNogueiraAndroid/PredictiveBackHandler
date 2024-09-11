@@ -19,6 +19,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.predictivebackhandler.ui.theme.PredictiveBackHandlerTheme
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
+import kotlin.coroutines.CoroutineContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +42,7 @@ class MainActivity : ComponentActivity() {
 
                                 val click = {
                                     navController.navigateUp()
-                                    Thread.sleep(1000) // simulate work during back handler
+                                    Thread.sleep(200) // simulate work during back handler
                                 }
 
                                 BackHandler {
@@ -51,16 +56,37 @@ class MainActivity : ComponentActivity() {
                                         if (list.size >= next) {
                                             navController.navigate(next.toString())
                                         }
+//                                        else {
+//                                            backMany()
+//                                        }
                                     }
                                 )
                             }
                         }
                     }
-
-
                 }
             }
         }
+    }
+
+    private fun backMany() {
+        MainScope().launch {
+            backFlow().collect{
+                back()
+            }
+            backFlow().collect{
+                back()
+            }
+            backFlow().collect{
+                back()
+            }
+        }
+    }
+
+    private fun backFlow():Flow<Int>  = flowOf(1).flowOn(Dispatchers.IO)
+
+    private fun back() {
+        this@MainActivity.onBackPressed()
     }
 
     @Composable
