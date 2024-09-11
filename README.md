@@ -1,4 +1,4 @@
-This is a repository with the intention to create a sample for this issue\
+This is a repository with the intention to create a sample for this issue:\
 https://issuetracker.google.com/issues/365027664
 
 Steps to reproduce issue:
