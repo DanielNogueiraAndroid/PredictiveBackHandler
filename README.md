@@ -21,4 +21,6 @@ java.lang.IndexOutOfBoundsException: Index -1 out of bounds for length 1\
                                                                                                         at java.util.ArrayList.get(ArrayList.java:434)\
                                                                                                         at androidx.navigation.compose.NavHostKt$NavHost$25$1.invokeSuspend(NavHost.kt:518)
 
-
+Note:\
+This value can be changed, as example from 1000 to 200 milliseconds and the crash still happens if the use navigate quickly. 
+Thread.sleep(1000) // simulate work during back handler
