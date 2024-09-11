@@ -13,7 +13,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,14 +34,8 @@ class MainActivity : ComponentActivity() {
                             composable(item.toString()) {
                                 Log.d("composable", "$item")
                                 BackHandler {
-                                    // debounce ? (avoid throttling )
-                                    // new runnable in main main (Phil comment) (factor possible race condition )
-                                    // optimization (make code more performative)
-                                    // possibly check stack currentBackStackEntryFlow
                                     Thread.sleep(1000) // simulate work during back handler
                                     navController.navigateUp() // action
-                                  //  navController.currentBackStackEntryFlow
-                                  //  navController.currentBackStack
                                 }
                                 Greeting(
                                     name = item.toString(),
