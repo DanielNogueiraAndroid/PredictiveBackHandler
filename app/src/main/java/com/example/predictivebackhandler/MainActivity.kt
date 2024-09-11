@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -28,21 +29,26 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val navController = rememberNavController()
 
-                   val list =  listOf(1,2,3)
+                    val list = listOf(1, 2, 3)
                     NavHost(navController, list.first().toString()) {
                         list.forEach { item ->
                             composable(item.toString()) {
                                 Log.d("composable", "$item")
-                                BackHandler {
+
+                                val click = {
+                                    navController.navigateUp()
                                     Thread.sleep(1000) // simulate work during back handler
-                                    navController.navigateUp() // action
+                                }
+
+                                BackHandler {
+                                    click.invoke()
                                 }
                                 Greeting(
                                     name = item.toString(),
                                     modifier = Modifier.padding(innerPadding),
                                     navigate = { _ ->
-                                        val next  = item+1
-                                        if (list.size>= next){
+                                        val next = item + 1
+                                        if (list.size >= next) {
                                             navController.navigate(next.toString())
                                         }
                                     }
@@ -50,6 +56,8 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
+
+
                 }
             }
         }
@@ -57,18 +65,22 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun Greeting(name: String, modifier: Modifier = Modifier, navigate: (String) -> Unit) {
-        Text(
-            text = "Hello $name!",
-            modifier = modifier
-        )
-        Button(onClick = { ->
-            navigate.invoke(name)
-        }, content = {
+        Column {
             Text(
-                text = "Hello $name!",
+                text = "Compose $name!",
                 modifier = modifier
             )
-        })
+            Button(onClick = { ->
+                navigate.invoke(name)
+            }, content = {
+                Text(
+                    text = "navigate to next item",
+                    modifier = modifier
+                )
+            }, modifier = modifier
+            )
+        }
+
     }
 
     @Preview(showBackground = true)
