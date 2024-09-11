@@ -13,3 +13,33 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+out/
+build/
+.idea/*
+!.idea/icon.png
+
+
+# Android Studio captures folder
+captures/
+
+vendor/
+./bundle
+
+coverage-error.log
+
+.kotlin/
