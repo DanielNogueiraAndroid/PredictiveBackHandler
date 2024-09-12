@@ -13,8 +13,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,9 +25,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlin.coroutines.CoroutineContext
 
 class MainActivity : ComponentActivity() {
+    private val list = listOf(1, 2, 3)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -34,15 +36,20 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val navController = rememberNavController()
 
-                    val list = listOf(1, 2, 3)
+                    LaunchedEffect("start") {
+                        MainScope().launch {
+                            autoStart(navController)
+                        }
+                    }
+
                     NavHost(navController, list.first().toString()) {
                         list.forEach { item ->
                             composable(item.toString()) {
-                                Log.d("composable", "$item")
+                                Log.d(this@MainActivity::class.simpleName, "composable $item")
 
                                 val click = {
+                                    Thread.sleep(1000) // simulate work during back handler
                                     navController.navigateUp()
-                                    Thread.sleep(200) // simulate work during back handler
                                 }
 
                                 BackHandler {
@@ -56,9 +63,9 @@ class MainActivity : ComponentActivity() {
                                         if (list.size >= next) {
                                             navController.navigate(next.toString())
                                         }
-//                                        else {
-//                                            backMany()
-//                                        }
+                                       else {
+                                            backMany()
+                                        }
                                     }
                                 )
                             }
@@ -69,23 +76,40 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private suspend fun autoStart(navController: NavHostController) {
+        delay(1000)
+        list.forEach { item ->
+            delay(200)
+            if (item > 1) {
+                navController.navigate(item.toString())
+                Log.d(this@MainActivity::class.simpleName, "auto navigate $item")
+            }
+        }
+        delay(1000)
+        backMany()
+        delay(1000)
+    }
+
     private fun backMany() {
+        // sendCancelIfRunning: isInProgress=falsecallback=androidx.activity.OnBackPressedDispatcher$Api34Impl$createOnBackAnimationCallback$1@6260b6b
         MainScope().launch {
-            backFlow().collect{
-                back()
-            }
-            backFlow().collect{
-                back()
-            }
-            backFlow().collect{
-                back()
+            list.forEach { item ->
+                //delay(2) // IndexOutOfBoundsException
+                //delay(4) // IndexOutOfBoundsException
+                //delay(5) // IndexOutOfBoundsException
+                //delay(10) // IndexOutOfBoundsException
+                delay(15) // TODO Check this consider debounce time ??? to allow sendCancelIfRunning?
+                backFlow().collect{
+                    back(item)
+                }
             }
         }
     }
 
     private fun backFlow():Flow<Int>  = flowOf(1).flowOn(Dispatchers.IO)
 
-    private fun back() {
+    private fun back(i: Int) {
+        Log.w(this@MainActivity::class.simpleName, "onBackPressed $i")
         this@MainActivity.onBackPressed()
     }
 
