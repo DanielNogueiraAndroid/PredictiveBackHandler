@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
                                 val onBack = {
                                     navController.navigateUp()
-                                    Thread.sleep(1000) // simulate work during back handler
+                                    Thread.sleep(2000) // simulate work during back handler
                                 }
 
                                 val next = item + 1
